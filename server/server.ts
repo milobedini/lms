@@ -1,5 +1,5 @@
-import { app } from './app';
 import { config } from 'dotenv';
+import { app } from './app';
 import connectDB from './utils/db';
 // require('dotenv').config();
 
