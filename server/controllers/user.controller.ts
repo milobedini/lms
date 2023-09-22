@@ -6,6 +6,7 @@ import path from 'path';
 import { CatchAsyncError } from '../middleware/catchAsyncError';
 import userModel, { IUser } from '../models/user.model';
 import ErrorHandler from '../utils/ErrorHandler';
+import { sendToken } from '../utils/jwt';
 import sendMail from '../utils/sendMail';
 
 config();
@@ -128,6 +129,57 @@ export const confirmUser = CatchAsyncError(
       res.send(201).json({
         success: true,
         message: `${user.name}, Your account has been created successfully`,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  },
+);
+
+// LOGIN USER
+
+type ILoginBody = {
+  email: string;
+  password: string;
+};
+
+export const loginUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, password } = req.body as ILoginBody;
+      if (!email || !password) {
+        return next(
+          new ErrorHandler('Please enter your email and password', 400),
+        );
+      }
+
+      const user = await userModel.findOne({ email }).select('+password');
+      if (!user) {
+        return next(new ErrorHandler('Invalid email or password', 400));
+      }
+
+      const isPasswordMatched = await user.comparePassword(password);
+      if (!isPasswordMatched) {
+        return next(new ErrorHandler('Invalid email or password', 400));
+      }
+
+      sendToken(user, 200, res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  },
+);
+
+export const logoutUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Empty cookies
+      res.cookie('access_token', '', { maxAge: 1 });
+      res.cookie('refresh_token', '', { maxAge: 1 });
+
+      res.status(200).json({
+        success: true,
+        message: 'Logged out successfully',
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
