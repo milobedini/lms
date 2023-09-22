@@ -3,6 +3,7 @@ import cors from 'cors';
 import { config } from 'dotenv';
 import express, { NextFunction, Request, Response } from 'express';
 import { ErrorMiddleware } from './middleware/error';
+import userRouter from './routes/user.route';
 export const app = express();
 
 config();
@@ -17,15 +18,18 @@ app.use(cookieParser());
 // CORS
 app.use(
   cors({
-    origin: process.env.ORIGIN
-  })
+    origin: process.env.ORIGIN,
+  }),
 );
+
+// Routes
+app.use('/api/v1', userRouter);
 
 // Test API
 app.get('/test', (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
-    message: 'API is working'
+    message: 'API is working',
   });
 });
 

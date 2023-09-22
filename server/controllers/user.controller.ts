@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 import jwt, { Secret } from 'jsonwebtoken';
 import path from 'path';
 import { CatchAsyncError } from '../middleware/catchAsyncError';
-import userModel from '../models/user.model';
+import userModel, { IUser } from '../models/user.model';
 import ErrorHandler from '../utils/ErrorHandler';
 import sendMail from '../utils/sendMail';
 
@@ -87,3 +87,50 @@ export const createActivationToken = (user: any): IActivationToken => {
 
   return { token, activationCode };
 };
+
+// CONFIRM USER
+type IActivationRequest = {
+  activation_token: string;
+  activation_code: string;
+};
+
+export const confirmUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { activation_token, activation_code } =
+        req.body as IActivationRequest;
+
+      // Check that the new user is valid
+      const newUser: { user: IUser; activationCode: string } = jwt.verify(
+        activation_token,
+        process.env.ACTIVATION_SECRET as string,
+      ) as { user: IUser; activationCode: string };
+
+      if (newUser.activationCode !== activation_code) {
+        return next(new ErrorHandler('Invalid activation code', 400));
+      }
+
+      const { name, email, password } = newUser.user;
+
+      // Check if exists
+      const userExists = await userModel.findOne({ email });
+
+      if (userExists) {
+        return next(new ErrorHandler('User already exists', 400));
+      }
+
+      const user = await userModel.create({
+        name,
+        email,
+        password,
+      });
+
+      res.send(201).json({
+        success: true,
+        message: `${user.name}, Your account has been created successfully`,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  },
+);
