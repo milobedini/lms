@@ -7,6 +7,7 @@ import { CatchAsyncError } from '../middleware/catchAsyncError';
 import userModel, { IUser } from '../models/user.model';
 import ErrorHandler from '../utils/ErrorHandler';
 import { sendToken } from '../utils/jwt';
+import { redis } from '../utils/redis';
 import sendMail from '../utils/sendMail';
 
 config();
@@ -171,11 +172,15 @@ export const loginUser = CatchAsyncError(
 );
 
 export const logoutUser = CatchAsyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: any, res: Response, next: NextFunction) => {
     try {
       // Empty cookies
       res.cookie('access_token', '', { maxAge: 1 });
       res.cookie('refresh_token', '', { maxAge: 1 });
+
+      // Delete from cache
+      const userId = req.user._id || '';
+      redis.del(userId);
 
       res.status(200).json({
         success: true,
