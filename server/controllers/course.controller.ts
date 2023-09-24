@@ -1,11 +1,14 @@
 import cloudinary from 'cloudinary';
+import ejs from 'ejs';
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
+import path from 'path';
 import { CatchAsyncError } from '../middleware/catchAsyncError';
 import CourseModel from '../models/course.model';
 import { createCourse } from '../services/course.service';
 import ErrorHandler from '../utils/ErrorHandler';
 import { redis } from '../utils/redis';
+import sendMail from '../utils/sendMail';
 
 // Upload Course
 export const uploadCourse = CatchAsyncError(
@@ -194,6 +197,90 @@ export const addQuestion = CatchAsyncError(
       courseContent.questions.push(newQuestion);
 
       await course?.save();
+      res.status(200).json({
+        success: true,
+        course,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  },
+);
+
+type IAddReplyBody = {
+  reply: string;
+  courseId: string;
+  contentId: string;
+  questionId: string;
+};
+
+// Add reply to question
+export const addReply = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { reply, courseId, contentId, questionId }: IAddReplyBody =
+        req.body;
+
+      const course = await CourseModel.findById(courseId);
+
+      if (!mongoose.Types.ObjectId.isValid(contentId)) {
+        return next(new ErrorHandler('Invalid Content ID', 400));
+      }
+
+      const courseContent = course?.courseData?.find((item: any) =>
+        item._id.equals(contentId),
+      );
+
+      if (!courseContent) {
+        return next(new ErrorHandler('Invalid Content ID', 400));
+      }
+
+      const question = courseContent?.questions?.find((item: any) =>
+        item._id.equals(questionId),
+      );
+
+      if (!question) {
+        return next(new ErrorHandler('Invalid Question ID', 400));
+      }
+
+      //   Create new reply object.
+
+      const newReply: any = {
+        user: req.user,
+        reply,
+      };
+
+      // Add to course content
+      question.questionReplies?.push(newReply);
+
+      await course?.save();
+
+      if (req.user?._id === question.user._id) {
+        // Create a notification.
+      } else {
+        // Send email to user.
+        const data = {
+          name: question.user.name,
+          title: courseContent.title,
+        };
+
+        const html = await ejs.renderFile(
+          path.join(__dirname, '../mails/question-reply.ejs'),
+          data,
+        );
+
+        try {
+          await sendMail({
+            email: question.user.email,
+            subject: 'Question Reply on Skillscape',
+            template: 'question-reply.ejs',
+            data,
+          });
+        } catch (error: any) {
+          return next(new ErrorHandler(error.message, 500));
+        }
+      }
+
       res.status(200).json({
         success: true,
         course,
