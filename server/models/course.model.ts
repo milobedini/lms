@@ -8,10 +8,10 @@ type IComment = {
 } & Document;
 
 type IReview = {
-  user: object;
+  user: IUser;
   rating: number;
   comment: string;
-  commentReplies: IComment[];
+  commentReplies?: IComment[];
 } & Document;
 
 type ILink = {
@@ -55,6 +55,7 @@ const reviewSchema = new Schema<IReview>({
     default: 0,
   },
   comment: String,
+  commentReplies: [Object],
 });
 
 const linkSchema = new Schema<ILink>({

@@ -290,3 +290,117 @@ export const addReply = CatchAsyncError(
     }
   },
 );
+
+// Add review to course
+type IAddReviewBody = {
+  review: string;
+  rating: number;
+  userId: string;
+};
+
+export const addReview = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userCourseList = req.user?.courses;
+      const courseId = req.params.id;
+
+      const coursePurchased = userCourseList?.some(
+        (course: any) => course._id.toString() === courseId,
+      );
+
+      if (!coursePurchased) {
+        return next(
+          new ErrorHandler('You have not purchased this course', 400),
+        );
+      }
+
+      const course = await CourseModel.findById(courseId);
+
+      const { rating, review }: IAddReviewBody = req.body;
+
+      const reviewData: any = {
+        user: req.user,
+        rating,
+        comment: review,
+      };
+
+      course?.reviews.push(reviewData);
+
+      let avgRating = 0;
+      course?.reviews?.forEach((review: any) => {
+        avgRating += review.rating;
+      });
+      if (course) {
+        course.ratings = avgRating / course?.reviews?.length;
+      }
+
+      await course?.save();
+
+      const notifcation = {
+        title: 'New review on your course',
+        message: `${req.user?.name} has reviewed your course ${course?.name}`,
+      };
+
+      //   Create notification for course creator.
+
+      res.status(200).json({
+        success: true,
+        course,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  },
+);
+
+// Admin reply to review
+
+type IAddReplyToReviewBody = {
+  comment: string;
+  courseId: string;
+  reviewId: string;
+};
+
+export const addReplyToReview = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { comment, courseId, reviewId } = req.body as IAddReplyToReviewBody;
+
+      const course = await CourseModel.findById(courseId);
+
+      if (!course) {
+        return next(new ErrorHandler('Invalid Course ID', 400));
+      }
+
+      const review = course?.reviews?.find(
+        (item: any) => item._id.toString() === reviewId,
+      );
+
+      if (!review) {
+        return next(new ErrorHandler('Invalid Review ID', 400));
+      }
+
+      const replyData: any = {
+        user: req.user,
+        comment,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      if (!review.commentReplies) {
+        review.commentReplies = [];
+      }
+
+      review.commentReplies?.push(replyData);
+
+      await course.save();
+
+      res.status(200).json({
+        success: true,
+        course,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  },
+);
