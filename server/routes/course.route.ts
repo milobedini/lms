@@ -1,7 +1,14 @@
 import express from 'express';
-import { uploadCourse } from '../controllers/course.controller';
+import {
+  previewAllCourses,
+  previewSingleCourse,
+  uploadCourse,
+} from '../controllers/course.controller';
 import { authorizeRoles, isAuthenticated } from '../middleware/auth';
 const courseRouter = express.Router();
+
+courseRouter.get('/courses/:id', previewSingleCourse);
+courseRouter.get('/courses', previewAllCourses);
 
 courseRouter.post(
   '/create-course',

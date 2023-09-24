@@ -4,6 +4,7 @@ import { CatchAsyncError } from '../middleware/catchAsyncError';
 import CourseModel from '../models/course.model';
 import { createCourse } from '../services/course.service';
 import ErrorHandler from '../utils/ErrorHandler';
+import { redis } from '../utils/redis';
 
 // Upload Course
 export const uploadCourse = CatchAsyncError(
@@ -59,6 +60,66 @@ export const editCourse = CatchAsyncError(
         success: true,
         course,
       });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  },
+);
+
+// Get Single Course, without purchasing.
+
+export const previewSingleCourse = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const courseId = req.params.id;
+
+      const isCached = await redis.get(courseId);
+
+      if (isCached) {
+        const course = JSON.parse(isCached);
+        res.status(200).json({
+          success: true,
+          course,
+        });
+      } else {
+        const course = await CourseModel.findById(courseId).select(
+          '-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links',
+        );
+
+        await redis.set(courseId, JSON.stringify(course));
+
+        res.status(200).json({
+          success: true,
+          course,
+        });
+      }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  },
+);
+
+export const previewAllCourses = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const isCached = await redis.get('courses');
+
+      if (isCached) {
+        const courses = JSON.parse(isCached);
+        res.status(200).json({
+          success: true,
+          courses,
+        });
+      } else {
+        const courses = await CourseModel.find().select(
+          '-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links',
+        );
+        await redis.set('courses', JSON.stringify(courses));
+        res.status(200).json({
+          success: true,
+          courses,
+        });
+      }
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
