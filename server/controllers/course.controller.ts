@@ -264,7 +264,7 @@ export const addReply = CatchAsyncError(
           title: courseContent.title,
         };
 
-        const html = await ejs.renderFile(
+        await ejs.renderFile(
           path.join(__dirname, '../mails/question-reply.ejs'),
           data,
         );
@@ -336,10 +336,10 @@ export const addReview = CatchAsyncError(
 
       await course?.save();
 
-      const notifcation = {
-        title: 'New review on your course',
-        message: `${req.user?.name} has reviewed your course ${course?.name}`,
-      };
+      // const notifcation = {
+      //   title: 'New review on your course',
+      //   message: `${req.user?.name} has reviewed your course ${course?.name}`,
+      // };
 
       //   Create notification for course creator.
 
