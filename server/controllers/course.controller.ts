@@ -125,3 +125,33 @@ export const previewAllCourses = CatchAsyncError(
     }
   },
 );
+
+// GET COURSE AFTER PURCHASE
+export const getCourse = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userCourseList = req.user?.courses;
+      const courseId = req.params.id;
+      const coursePurchased = userCourseList?.find(
+        (course: any) => course._id.toString() === courseId,
+      );
+
+      if (!coursePurchased) {
+        return next(
+          new ErrorHandler('You have not purchased this course', 400),
+        );
+      }
+
+      const course = await CourseModel.findById(courseId);
+
+      const content = course?.courseData;
+
+      res.status(200).json({
+        success: true,
+        content,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  },
+);

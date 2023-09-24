@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  getCourse,
   previewAllCourses,
   previewSingleCourse,
   uploadCourse,
@@ -9,6 +10,8 @@ const courseRouter = express.Router();
 
 courseRouter.get('/courses/:id', previewSingleCourse);
 courseRouter.get('/courses', previewAllCourses);
+
+courseRouter.get('/course-content/:id', isAuthenticated, getCourse);
 
 courseRouter.post(
   '/create-course',
