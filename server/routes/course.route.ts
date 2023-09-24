@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  addQuestion,
   getCourse,
   previewAllCourses,
   previewSingleCourse,
@@ -12,6 +13,8 @@ courseRouter.get('/courses/:id', previewSingleCourse);
 courseRouter.get('/courses', previewAllCourses);
 
 courseRouter.get('/course-content/:id', isAuthenticated, getCourse);
+
+courseRouter.put('/add-question', isAuthenticated, addQuestion);
 
 courseRouter.post(
   '/create-course',

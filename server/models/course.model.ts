@@ -2,8 +2,8 @@ import { Schema, model } from 'mongoose';
 
 type IComment = {
   user: object;
-  comment: string;
-  commentReplies?: IComment[];
+  question: string;
+  questionReplies?: IComment[];
 } & Document;
 
 type IReview = {
@@ -42,7 +42,7 @@ type ICourse = {
   benefits: { title: string }[];
   prerequisites: { title: string }[];
   reviews: IReview[];
-  courseData: ICourseData;
+  courseData: [ICourseData];
   ratings?: number;
   purchased?: number;
 } & Document;
@@ -63,8 +63,8 @@ const linkSchema = new Schema<ILink>({
 
 const commentSchema = new Schema<IComment>({
   user: Object,
-  comment: String,
-  commentReplies: [Object],
+  question: String,
+  questionReplies: [Object],
 });
 
 const courseDataSchema = new Schema<ICourseData>({
