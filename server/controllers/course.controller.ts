@@ -6,7 +6,7 @@ import path from 'path';
 import { CatchAsyncError } from '../middleware/catchAsyncError';
 import CourseModel from '../models/course.model';
 import NotificationModel from '../models/notification.model';
-import { createCourse } from '../services/course.service';
+import { createCourse, getAllCoursesService } from '../services/course.service';
 import ErrorHandler from '../utils/ErrorHandler';
 import { redis } from '../utils/redis';
 import sendMail from '../utils/sendMail';
@@ -410,6 +410,17 @@ export const addReplyToReview = CatchAsyncError(
         success: true,
         course,
       });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  },
+);
+
+// Get all courses, admin only.
+export const getAllCourses = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllCoursesService(res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }

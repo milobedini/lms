@@ -4,6 +4,7 @@ import {
   addReply,
   addReplyToReview,
   addReview,
+  getAllCourses,
   getCourse,
   previewAllCourses,
   previewSingleCourse,
@@ -16,6 +17,13 @@ courseRouter.get('/courses/:id', previewSingleCourse);
 courseRouter.get('/courses', previewAllCourses);
 
 courseRouter.get('/course-content/:id', isAuthenticated, getCourse);
+
+courseRouter.get(
+  '/get-all-courses',
+  isAuthenticated,
+  authorizeRoles('admin'),
+  getAllCourses,
+);
 
 courseRouter.put('/add-question', isAuthenticated, addQuestion);
 courseRouter.put('/add-reply', isAuthenticated, addReply);

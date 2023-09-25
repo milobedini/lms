@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   confirmUser,
+  getAllUsers,
   getUserInfo,
   loginUser,
   logoutUser,
@@ -11,7 +12,7 @@ import {
   updateUserInfo,
   updateUserPassword,
 } from '../controllers/user.controller';
-import { isAuthenticated } from '../middleware/auth';
+import { authorizeRoles, isAuthenticated } from '../middleware/auth';
 const userRouter = express.Router();
 
 userRouter.post('/registration', registrationUser);
@@ -23,6 +24,14 @@ userRouter.get('/refresh-token', updateAccessToken);
 // userRouter.get('/logout', isAuthenticated, authorizeRoles('admin'), logoutUser);
 
 userRouter.get('/profile', isAuthenticated, getUserInfo);
+
+userRouter.get(
+  '/get-all-users',
+  isAuthenticated,
+  authorizeRoles('admin'),
+  getAllUsers,
+);
+
 userRouter.put('/update-user', isAuthenticated, updateUserInfo);
 userRouter.put('/update-password', isAuthenticated, updateUserPassword);
 userRouter.put('/update-avatar', isAuthenticated, updateUserAvatar);
