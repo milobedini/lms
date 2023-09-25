@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import path from 'path';
 import { CatchAsyncError } from '../middleware/catchAsyncError';
 import CourseModel from '../models/course.model';
+import NotificationModel from '../models/notification.model';
 import { createCourse } from '../services/course.service';
 import ErrorHandler from '../utils/ErrorHandler';
 import { redis } from '../utils/redis';
@@ -196,6 +197,12 @@ export const addQuestion = CatchAsyncError(
       // Add to course content
       courseContent.questions.push(newQuestion);
 
+      await NotificationModel.create({
+        user: req.user?._id,
+        title: 'New Question Received',
+        message: `You have a new question in Course ${course?.name}, on ${courseContent.title} from ${req.user?.name}}`,
+      });
+
       await course?.save();
       res.status(200).json({
         success: true,
@@ -256,7 +263,11 @@ export const addReply = CatchAsyncError(
       await course?.save();
 
       if (req.user?._id === question.user._id) {
-        // Create a notification.
+        await NotificationModel.create({
+          user: req.user?._id,
+          title: 'New Question Reply Received',
+          message: `You have a new question reply in Course ${course?.name}, on ${courseContent.title} from ${req.user?.name}}`,
+        });
       } else {
         // Send email to user.
         const data = {
@@ -336,10 +347,10 @@ export const addReview = CatchAsyncError(
 
       await course?.save();
 
-      // const notifcation = {
-      //   title: 'New review on your course',
-      //   message: `${req.user?.name} has reviewed your course ${course?.name}`,
-      // };
+      const notifcation = {
+        title: 'New review on your course',
+        message: `${req.user?.name} has reviewed your course ${course?.name}`,
+      };
 
       //   Create notification for course creator.
 

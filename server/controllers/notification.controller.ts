@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import cron from 'node-cron';
 import { CatchAsyncError } from '../middleware/catchAsyncError';
 import NotificationModel from '../models/notification.model';
 import ErrorHandler from '../utils/ErrorHandler';
@@ -50,3 +51,16 @@ export const updateNotification = CatchAsyncError(
     }
   },
 );
+
+// DELETE notification, admin only.
+// Crone job to delete notifications older than 30 days.
+
+// Second, minute, hour, day of month, month, day of week
+cron.schedule('0 0 0 * * *', async () => {
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  await NotificationModel.deleteMany({
+    status: 'read',
+    // Only delete those older than 30 days and those that are read.
+    createdAt: { $lt: thirtyDaysAgo },
+  });
+});
