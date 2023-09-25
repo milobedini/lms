@@ -1,6 +1,7 @@
 'use client';
 import { FC, useState } from 'react';
 import Header from './components/Header';
+import Hero from './components/Route/Hero';
 import Heading from './utils/Heading';
 
 type Props = {};
@@ -16,6 +17,7 @@ const Page: FC<Props> = (props) => {
         keywords="Programming,Coding,MERN,Next,React,MERN,Redux,Development,Engineering"
       />
       <Header open={open} setOpen={setOpen} activeItem={activeItem} />
+      <Hero />
     </div>
   );
 };
