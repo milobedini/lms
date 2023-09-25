@@ -5,7 +5,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import { ErrorMiddleware } from './middleware/error';
 import analyticsRouter from './routes/analytics.route';
 import courseRouter from './routes/course.route';
-import layourRouter from './routes/layout.route';
+import layoutRouter from './routes/layout.route';
 import notificationRouter from './routes/notification.route';
 import orderRouter from './routes/order.route';
 import userRouter from './routes/user.route';
@@ -35,7 +35,7 @@ app.use(
   orderRouter,
   notificationRouter,
   analyticsRouter,
-  layourRouter,
+  layoutRouter,
 );
 
 // Test API
