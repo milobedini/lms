@@ -26,8 +26,16 @@ const config: Config = {
         '800px': '800px',
         '400px': '400px',
       },
+      colors: {
+        background: '#202F43',
+        text: '#FEFEFE',
+        accent: '#3AB0B2',
+        dark: '#1D2A3C',
+        button: '#D16F45',
+      },
     },
   },
+
   plugins: [],
 };
 export default config;
