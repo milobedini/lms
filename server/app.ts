@@ -3,6 +3,7 @@ import cors from 'cors';
 import { config } from 'dotenv';
 import express, { NextFunction, Request, Response } from 'express';
 import { ErrorMiddleware } from './middleware/error';
+import analyticsRouter from './routes/analytics.route';
 import courseRouter from './routes/course.route';
 import notificationRouter from './routes/notification.route';
 import orderRouter from './routes/order.route';
@@ -26,7 +27,14 @@ app.use(
 );
 
 // Routes
-app.use('/api/v1', userRouter, courseRouter, orderRouter, notificationRouter);
+app.use(
+  '/api/v1',
+  userRouter,
+  courseRouter,
+  orderRouter,
+  notificationRouter,
+  analyticsRouter,
+);
 
 // Test API
 app.get('/test', (req: Request, res: Response) => {
