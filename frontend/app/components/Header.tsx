@@ -93,7 +93,7 @@ const Header: FC<Props> = ({ activeItem, setOpen }) => {
               <br />
               <br />
               <p className="text-[16px] px-2 pl-5 text-black dark:text-white">
-                Copyright &copy; 2023 SkillSense
+                Copyright &copy; 2023 SkillScape
               </p>
             </div>
           </div>
