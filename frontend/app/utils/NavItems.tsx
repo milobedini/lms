@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 export const navItemsData = [
@@ -37,9 +38,7 @@ const NavItems: React.FC<Props> = ({ activeItem, isMobile }) => {
             <Link href={`${item.url}`} key={index} passHref>
               <span
                 className={`${
-                  activeItem === index
-                    ? 'dark:text-[#37a39a] text-[crimson]'
-                    : 'dark:text-white text-black'
+                  activeItem === index ? 'text-accent' : 'text-white'
                 } text-[18px] px-6 font-Alegraya font-[400]`}
               >
                 {item.name}
@@ -51,26 +50,20 @@ const NavItems: React.FC<Props> = ({ activeItem, isMobile }) => {
         <div className="800px:hidden mt-5">
           <div className="w-full text-center py-6">
             <Link href={'/'} passHref>
-              <img
-                src="icon_white.png"
+              <Image
+                src={require('../../public/icon_white.png')}
                 alt="logo"
-                className="h-[60px] mx-auto"
-              />
-              <img
-                src="icon_black.png"
-                alt="logo"
-                className="dark:hidden h-[60px] mt-[-60px] mx-auto"
+                height={60}
+                className="h-[60px] mx-auto mb-[-20px]"
               />
             </Link>
           </div>
           {navItemsData &&
             navItemsData.map((item, index) => (
-              <Link href={'/'} passHref>
+              <Link href={'/'} passHref key={index}>
                 <span
                   className={`${
-                    activeItem === index
-                      ? 'dark:text-[#37a39a] text-[crimson]'
-                      : 'dark:text-white text-black'
+                    activeItem === index ? 'text-accent' : 'dark:text-white'
                   } block py-6 text-[18px] px-6 font-Alegraya font-[400]`}
                 >
                   {item.name}

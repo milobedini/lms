@@ -1,6 +1,5 @@
 import { Alegreya } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from './utils/theme-provider';
 
 const alegraya = Alegreya({
   subsets: ['latin'],
@@ -16,11 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${alegraya.variable} !bg-white bg-no-repeat dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300`}
+        className={`${alegraya.variable}  bg-no-repeat bg-gradient-to-b from-gray-900 to-black duration-300`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-        </ThemeProvider>
+        {children}
       </body>
     </html>
   );

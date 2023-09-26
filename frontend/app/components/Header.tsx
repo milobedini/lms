@@ -1,9 +1,9 @@
 'use client';
+import Image from 'next/image';
 import Link from 'next/link';
 import { FC, useState } from 'react';
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from 'react-icons/hi';
 import NavItems from '../utils/NavItems';
-import ThemeSwitcher from '../utils/ThemeSwitcher';
 
 type Props = {
   open: boolean;
@@ -37,8 +37,8 @@ const Header: FC<Props> = ({ activeItem, setOpen }) => {
       <div
         className={`${
           active
-            ? 'dark:bg-opacity-50 dark:bg-gradient-to-b dark:from-gray-900 dark:to-black fixed top-0 left-0 w-full h-[80px] z-[80] border-b dark:border-[#ffffff1c] shadow-xl transition duration-500'
-            : 'w-full border-b dark:border=[#ffff1c] h-[80px] z-[80] dark:shadow'
+            ? 'bg-opacity-50 bg-gradient-to-b from-gray-900 to-black fixed top-0 left-0 w-full h-[80px] z-[80] border-b border-[#ffffff1c] shadow-xl transition duration-500'
+            : 'w-full border-b border=[#ffff1c] h-[80px] z-[80] shadow'
         }`}
       >
         <div className="w-[95%] 800px:w-[92%] m-auto py-2 h-full">
@@ -46,32 +46,30 @@ const Header: FC<Props> = ({ activeItem, setOpen }) => {
             <div>
               <Link
                 href={'/'}
-                className={`text-[25px] font-Alegraya font-[500] text-black dark:text-white`}
+                className={`text-[25px] font-Alegraya font-[500] text-white`}
               >
                 {/* SkillScape */}
-                <img src="logo-white-no.png" alt="logo" className="h-[40px]" />
-                <img
-                  src="logo-no-background.png"
+                <Image
+                  src={require('../../public/logo-white-no.png')}
+                  height={40}
                   alt="logo"
-                  className="dark:hidden h-[40px] mt-[-40px]"
                 />
               </Link>
             </div>
             <div className="flex items-center">
               <NavItems activeItem={activeItem} isMobile={false} />
-              <ThemeSwitcher />
               {/* Only for mobile */}
               <div className="800px:hidden">
                 <HiOutlineMenuAlt3
                   size={25}
-                  className="cursor-pointer dark:text-white text-black"
+                  className="cursor-pointer text-white"
                   onClick={() => setOpenSidebar(true)}
                 />
               </div>
             </div>
             <HiOutlineUserCircle
               size={25}
-              className="hidden 800px:block cursor-pointer dark:text-white text-black"
+              className="hidden 800px:block cursor-pointer text-white"
               onClick={() => setOpen(true)}
             />
           </div>
@@ -79,20 +77,20 @@ const Header: FC<Props> = ({ activeItem, setOpen }) => {
         {/* Mobile Sidebar */}
         {openSidebar && (
           <div
-            className="fixed w-full h-screen top-0 left-0 z-[99999] dark:bg-[unset] bg-[#00000024]"
+            className="fixed w-full h-screen top-0 left-0 z-[99999] bg-[unset] "
             onClick={handleClose}
             id="screen"
           >
-            <div className="w-[70%] fixed z-[9999999] h-screen bg-white dark:bg-slate-900 dark:bg-opacity-90 top-0 right-0">
+            <div className="w-[70%] fixed z-[9999999] h-screen  bg-slate-900 bg-opacity-90 top-0 right-0">
               <NavItems activeItem={activeItem} isMobile={true} />
               <HiOutlineUserCircle
                 size={25}
-                className="cursor-pointer ml-5 my-2 dark:text-white text-black"
+                className="cursor-pointer ml-5 my-2 text-white"
                 onClick={() => setOpen(true)}
               />
               <br />
               <br />
-              <p className="text-[16px] px-2 pl-5 text-black dark:text-white">
+              <p className="text-[16px] px-2 pl-5 k text-white">
                 Copyright &copy; 2023 SkillScape
               </p>
             </div>
