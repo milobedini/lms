@@ -4,7 +4,7 @@ import Header from './components/Header';
 import Hero from './components/Route/Hero';
 import Heading from './utils/Heading';
 
-type Props = {};
+type Props = object;
 
 const Page: FC<Props> = (props) => {
   const [open, setOpen] = useState(false);
