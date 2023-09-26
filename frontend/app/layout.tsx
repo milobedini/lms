@@ -1,4 +1,5 @@
 import { Alegreya } from 'next/font/google';
+import { Toaster } from 'react-hot-toast';
 import './globals.css';
 
 const alegraya = Alegreya({
@@ -18,6 +19,7 @@ export default function RootLayout({
         className={`${alegraya.variable}  bg-no-repeat bg-gradient-to-b from-gray-900 to-black duration-300`}
       >
         {children}
+        <Toaster position="top-center" reverseOrder={false} />
       </body>
     </html>
   );

@@ -15,6 +15,7 @@ type Props = {
 };
 
 const schema = Yup.object().shape({
+  name: Yup.string().required('Please enter your name'),
   email: Yup.string()
     .email('Invalid email')
     .required('Please enter your email'),
@@ -23,14 +24,15 @@ const schema = Yup.object().shape({
     .min(6, 'Password must be at least 6 characters'),
 });
 
-const Login: FC<Props> = ({ setRoute }) => {
+const Signup: FC<Props> = ({ setRoute }) => {
   const [show, setShow] = useState(false);
 
   const formik = useFormik({
-    initialValues: { email: '', password: '' },
+    initialValues: { name: '', email: '', password: '' },
     validationSchema: schema,
-    onSubmit: async ({ email, password }) => {
+    onSubmit: async ({ name, email, password }) => {
       console.log(email, password);
+      setRoute('Verification');
     },
   });
 
@@ -38,8 +40,24 @@ const Login: FC<Props> = ({ setRoute }) => {
 
   return (
     <div className="w-full">
-      <h1 className={`${styles.title}`}>Login with SkillScape</h1>
+      <h1 className={`${styles.title}`}>Join SkillScape</h1>
       <form onSubmit={handleSubmit}>
+        <label className={`${styles.label} `} htmlFor="email">
+          Enter your Name
+        </label>
+        <input
+          type="name"
+          name="name"
+          id="name"
+          value={values.name}
+          onChange={handleChange}
+          placeholder="Joe Bloggs"
+          className={`${errors.name && touched.name && 'border-red-500'} 
+          ${styles.input} mb-3`}
+        />
+        {errors.name && touched.name && (
+          <span className="text-red-500 text-sm pt-2 block">{errors.name}</span>
+        )}
         <label className={`${styles.label}`} htmlFor="email">
           Enter your Email
         </label>
@@ -94,23 +112,23 @@ const Login: FC<Props> = ({ setRoute }) => {
           )}
         </div>
         <div className="w-full mt-5">
-          <input type="submit" value="Login" className={`${styles.button}`} />
+          <input type="submit" value="Signup" className={`${styles.button}`} />
         </div>
         <br />
         <h5 className="text-center pt-4 font-Alegraya text-[14px] text-text">
-          Or join with
+          Or create an account with
         </h5>
         <div className="flex items-center justify-center my-3">
           <FcGoogle size={30} className="cursor-pointer mr-2" />
           <AiFillGithub size={30} className="cursor-pointer ml-2" />
         </div>
         <h5 className="text-center pt-4 font-Alegraya text-[14px]">
-          Don&rsquo;t have an account?
+          Already have an account?
           <span
             className="text-button pl-1 cursor-pointer"
-            onClick={() => setRoute('Signup')}
+            onClick={() => setRoute('Login')}
           >
-            Sign Up
+            Sign In
           </span>
         </h5>
       </form>
@@ -119,4 +137,4 @@ const Login: FC<Props> = ({ setRoute }) => {
   );
 };
 
-export default Login;
+export default Signup;
