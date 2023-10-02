@@ -98,7 +98,7 @@ const Login: FC<Props> = ({ setRoute }) => {
         </div>
         <br />
         <h5 className="text-center pt-4 font-Alegraya text-[14px] text-text">
-          Or join with
+          Or login with
         </h5>
         <div className="flex items-center justify-center my-3">
           <FcGoogle size={30} className="cursor-pointer mr-2" />

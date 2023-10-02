@@ -1,5 +1,7 @@
+'use client';
 import { Alegreya } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
+import { Providers } from './Provider';
 import './globals.css';
 
 const alegraya = Alegreya({
@@ -18,8 +20,10 @@ export default function RootLayout({
       <body
         className={`${alegraya.variable}  bg-no-repeat bg-gradient-to-b from-gray-900 to-black duration-300`}
       >
-        {children}
-        <Toaster position="top-center" reverseOrder={false} />
+        <Providers>
+          {children}
+          <Toaster position="top-center" reverseOrder={false} />
+        </Providers>
       </body>
     </html>
   );
