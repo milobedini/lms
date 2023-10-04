@@ -1,8 +1,13 @@
 'use client';
+import { useSocialLoginMutation } from '@/redux/features/auth/authApi';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from 'react-icons/hi';
+import { useSelector } from 'react-redux';
+import defaultAvatar from '../../public/assets/defaultAvatar.png';
 import CustomModal from '../utils/CustomModal';
 import NavItems from '../utils/NavItems';
 import Login from './auth/Login';
@@ -20,6 +25,34 @@ type Props = {
 const Header: FC<Props> = ({ activeItem, setOpen, route, setRoute, open }) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
+  const { user } = useSelector((state: any) => state.auth);
+  const { data } = useSession();
+
+  const [socialAuth, { isSuccess, error }] = useSocialLoginMutation();
+
+  useEffect(() => {
+    if (!user) {
+      if (data) {
+        socialAuth({
+          email: data.user?.email,
+          name: data.user?.name,
+          avatar: data.user?.image,
+        });
+      }
+    }
+    if (isSuccess) {
+      toast.success('Logged in successfully');
+    }
+    if (error) {
+      if ('data' in error) {
+        const errorData = error as any;
+        toast.error(errorData.data.message || 'Something went wrong');
+      }
+    }
+  }, [data, user]);
+
+  console.log(defaultAvatar);
+  console.log(user);
 
   //   Sticky Header
   if (typeof window !== 'undefined') {
@@ -73,11 +106,23 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, setRoute, open }) => {
                 />
               </div>
             </div>
-            <HiOutlineUserCircle
-              size={25}
-              className="hidden 800px:block cursor-pointer text-white"
-              onClick={() => setOpen(true)}
-            />
+            {user ? (
+              <Link href={'/profile'}>
+                <Image
+                  src={user.avatar ? user.avatar.url : defaultAvatar.src}
+                  alt="user"
+                  width={30}
+                  height={30}
+                  className="rounded-full cursor-pointer"
+                />
+              </Link>
+            ) : (
+              <HiOutlineUserCircle
+                size={25}
+                className="hidden 800px:block cursor-pointer text-white"
+                onClick={() => setOpen(true)}
+              />
+            )}
           </div>
         </div>
         {/* Mobile Sidebar */}

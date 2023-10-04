@@ -1,4 +1,5 @@
 'use client';
+import { SessionProvider } from 'next-auth/react';
 import { Alegreya } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import { Providers } from './Provider';
@@ -21,8 +22,10 @@ export default function RootLayout({
         className={`${alegraya.variable}  bg-no-repeat bg-gradient-to-b from-gray-900 to-black duration-300`}
       >
         <Providers>
-          {children}
-          <Toaster position="top-center" reverseOrder={false} />
+          <SessionProvider>
+            {children}
+            <Toaster position="top-center" reverseOrder={false} />
+          </SessionProvider>
         </Providers>
       </body>
     </html>

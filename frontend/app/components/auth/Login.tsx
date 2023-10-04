@@ -1,6 +1,9 @@
 'use client';
+import { useLoginMutation } from '@/redux/features/auth/authApi';
 import { useFormik } from 'formik';
-import { FC, useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { FC, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import {
   AiFillGithub,
   AiOutlineEye,
@@ -12,6 +15,7 @@ import { styles } from '../../../app/styles/style';
 
 type Props = {
   setRoute: (route: string) => void;
+  setOpen: (open: boolean) => void;
 };
 
 const schema = Yup.object().shape({
@@ -23,16 +27,30 @@ const schema = Yup.object().shape({
     .min(6, 'Password must be at least 6 characters'),
 });
 
-const Login: FC<Props> = ({ setRoute }) => {
+const Login: FC<Props> = ({ setRoute, setOpen }) => {
   const [show, setShow] = useState(false);
+  const [login, { isSuccess, data, error }] = useLoginMutation();
 
   const formik = useFormik({
     initialValues: { email: '', password: '' },
     validationSchema: schema,
     onSubmit: async ({ email, password }) => {
-      console.log(email, password);
+      await login({ email, password });
     },
   });
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Logged in successfully');
+      setOpen(false);
+    }
+    if (error) {
+      if ('data' in error) {
+        const errorData = error as any;
+        toast.error(errorData.data.message);
+      }
+    }
+  }, [error, isSuccess]);
 
   const { errors, touched, values, handleChange, handleSubmit } = formik;
 
@@ -101,8 +119,16 @@ const Login: FC<Props> = ({ setRoute }) => {
           Or login with
         </h5>
         <div className="flex items-center justify-center my-3">
-          <FcGoogle size={30} className="cursor-pointer mr-2" />
-          <AiFillGithub size={30} className="cursor-pointer ml-2" />
+          <FcGoogle
+            size={30}
+            className="cursor-pointer mr-2"
+            onClick={() => signIn('google')}
+          />
+          <AiFillGithub
+            size={30}
+            className="cursor-pointer ml-2"
+            onClick={() => signIn('github')}
+          />
         </div>
         <h5 className="text-center pt-4 font-Alegraya text-[14px]">
           Don&rsquo;t have an account?
