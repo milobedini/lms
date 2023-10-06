@@ -1,8 +1,11 @@
 'use client';
+import { useLoadUserQuery } from '@/redux/features/api/apiSlice';
 import { SessionProvider } from 'next-auth/react';
 import { Alegreya } from 'next/font/google';
+import { FC, ReactNode } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { Providers } from './Provider';
+import Loader from './components/loader/Loader';
 import './globals.css';
 
 const alegraya = Alegreya({
@@ -23,7 +26,7 @@ export default function RootLayout({
       >
         <Providers>
           <SessionProvider>
-            {children}
+            <CustomWrapper>{children}</CustomWrapper>
             <Toaster position="top-center" reverseOrder={false} />
           </SessionProvider>
         </Providers>
@@ -31,3 +34,9 @@ export default function RootLayout({
     </html>
   );
 }
+
+const CustomWrapper: FC<{ children: ReactNode }> = ({ children }) => {
+  const { isLoading } = useLoadUserQuery({});
+
+  return <>{isLoading ? <Loader isFullscreen /> : <>{children}</>}</>;
+};
