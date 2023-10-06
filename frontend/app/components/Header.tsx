@@ -1,5 +1,8 @@
 'use client';
-import { useSocialLoginMutation } from '@/redux/features/auth/authApi';
+import {
+  useLogoutQuery,
+  useSocialLoginMutation,
+} from '@/redux/features/auth/authApi';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -30,6 +33,13 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, setRoute, open }) => {
 
   const [socialAuth, { isSuccess, error }] = useSocialLoginMutation();
 
+  const [logout, setLogout] = useState(false);
+
+  // Logout if logout is true
+  useLogoutQuery(undefined, {
+    skip: !logout ? true : false,
+  });
+
   useEffect(() => {
     if (!user) {
       if (data) {
@@ -40,14 +50,21 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, setRoute, open }) => {
         });
       }
     }
-    if (isSuccess) {
-      toast.success('Logged in successfully');
+    // Np user and success.
+    if (data === null) {
+      if (isSuccess) {
+        toast.success('Logged in successfully');
+      }
     }
     if (error) {
       if ('data' in error) {
         const errorData = error as any;
         toast.error(errorData.data.message || 'Something went wrong');
       }
+    }
+    // If no user, logout.
+    if (data === null) {
+      setLogout(true);
     }
   }, [data, user]);
 

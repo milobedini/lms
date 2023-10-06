@@ -6,6 +6,8 @@ type ProtectedProps = {
   children: ReactNode;
 };
 
+// Redirect to home page if user is not authenticated
+
 export default function Protected({ children }: ProtectedProps) {
   const isAuthenticated = useUserAuth();
 
