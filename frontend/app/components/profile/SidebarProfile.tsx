@@ -1,7 +1,8 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { FC } from 'react';
 import { AiOutlineLogout } from 'react-icons/ai';
-import { RiLockPasswordLine } from 'react-icons/ri';
+import { RiAdminLine, RiLockPasswordLine } from 'react-icons/ri';
 import { SiCoursera } from 'react-icons/si';
 import defaultAvatar from '../../../public/assets/defaultAvatar.png';
 
@@ -79,6 +80,17 @@ const SidebarProfile: FC<Props> = ({
           Log Out
         </h5>
       </div>
+      {user.role === 'admin' && (
+        <Link
+          href={'/admin'}
+          className="w-full flex items-center px-3 py-8 cursor-pointer border-t-2 border-gray-100"
+        >
+          <RiAdminLine size={20} fill="white" />
+          <h5 className="pl-2 800px:block hidden font-Alegraya text-white ">
+            Admin Dashboard
+          </h5>
+        </Link>
+      )}
     </div>
   );
 };
